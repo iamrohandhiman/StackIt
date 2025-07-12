@@ -46,6 +46,7 @@ exports.login = async ({ email, password }) => {
   const user = await User.findOne({ userId: credentials._id });
   if (!user) throw new Error('User profile not found');
 
-  const token = generateToken({ userId: user._id });
-  return { token };
+  // const token = generateToken({ userId: user._id });
+  
+  return user ;
 };
