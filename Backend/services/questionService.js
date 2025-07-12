@@ -2,10 +2,16 @@ const Question = require('../models/question');
 const Answer = require('../models/answer');
 const User = require('../models/user');
 
-exports.createQuestion = async ({ body, tags }) => {
-  const question = await Question.create({ body, tags });
+exports.createQuestion = async ({ title, body, tags }) => {
+  const question = new Question({
+    title,
+    body,
+    tags
+  });
+  await question.save();
   return question;
 };
+
 
 exports.addAnswer = async ({ questionId, userId, userName, body, mentions }) => {
   const answer = await Answer.create({
