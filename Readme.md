@@ -5,6 +5,12 @@
 
 StackIt is a full-stack, minimal Q&A forum platform inspired by Stack Overflow. It provides a space for users to ask questions, post answers, and engage in a community-driven knowledge-sharing environment. This monorepo contains the complete project, including a Node.js backend, a Flutter mobile application, and a React web application.
 
+### 🚀 Demo Video
+
+[![Demo Video Showcase](https://img.youtube.com/vi/y0ry4CAtzXQ/0.jpg)](https://www.youtube.com/watch?v=y0ry4CAtzXQ)
+
+*Click the image to watch the demo on YouTube.*
+
 ## Features
 
 *   **User Authentication**: Secure user signup and login using JSON Web Tokens (JWT). The system uses cookie-based authentication for the web and bearer tokens for the mobile application.
