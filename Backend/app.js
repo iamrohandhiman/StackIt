@@ -1,33 +1,41 @@
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const morgan = require('morgan'); 
+const morgan = require('morgan');
+const cors = require('cors'); // 🆕 import cors
 
 const connectDB = require('./utils/db');
 const authRoutes = require('./routes/authRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const questionRoutes = require('./routes/questionRoutes');
 
-
 const app = express();
 connectDB();
 
+// 🔐 CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173', 
+  'http://localhost:3000', 
+  'http://127.0.0.1:5173', 
+  'http://localhost:8081', 
+  'http://localhost:8080', 
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true, 
+}));
 
 app.use(morgan('dev')); 
 app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/v1/auth', authRoutes);
-
 app.use('/api/v1', questionRoutes);
 
-
-app.get('/health',(req,res)=>{
-  res.send("okay")
-})
-
-app.use('/api/v1', questionRoutes);
-
+app.get('/health', (req, res) => {
+  res.send("okay");
+});
 
 app.use(errorHandler);
 
