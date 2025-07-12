@@ -17,6 +17,9 @@ app.use(cookieParser());
 
 app.use('/api/v1/auth', authRoutes);
 
+app.use('/health',(req,res)=>{
+  res.send("okay")
+})
 
 app.use(errorHandler);
 
