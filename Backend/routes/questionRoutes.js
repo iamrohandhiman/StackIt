@@ -3,17 +3,19 @@ const router = express.Router();
 const questionController = require('../controllers/questionController');
 const authMiddleware = require('../middleware/authMiddleware');
 
-// Create a question
-router.post('/questions', questionController.createQuestion);
+//  Only authenticated users can create questions
+router.post('/questions', authMiddleware, questionController.createQuestion);
 
-// Add an answer to a question
-router.post('/questions/:questionId/answers', questionController.addAnswer);
+// Only authenticated users can add answers
+router.post('/questions/:questionId/answers', authMiddleware, questionController.addAnswer);
 
-// Upvote an answer
-router.post('/answers/:answerId/upvote', questionController.upvoteAnswer);
+// Only authenticated users can upvote answers
+router.post('/answers/:answerId/upvote', authMiddleware, questionController.upvoteAnswer);
 
-// Downvote an answer
-router.post('/answers/:answerId/downvote', questionController.downvoteAnswer);
+//  Only authenticated users can downvote answers
+router.post('/answers/:answerId/downvote', authMiddleware, questionController.downvoteAnswer);
+
+
 
 // Get all questions (populated)
 router.get('/questions', questionController.getAllQuestions);
@@ -26,7 +28,5 @@ router.get('/questions/:questionId', questionController.getQuestionById);
 
 // Get paginated questions with sorting (dashboard)
 router.get('/dashboard/questions', questionController.getQuestionsPaginated);
-
-
 
 module.exports = router;
