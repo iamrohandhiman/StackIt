@@ -25,7 +25,7 @@ class SignupController extends ChangeNotifier {
 
     try {
       final response = await http.post(
-        Uri.parse('https://stackit-lv2e.onrender.com/api/v1/auth/signup'),
+        Uri.parse('http://192.168.0.106:5000/api/v1/auth/signup'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(data.toJson()),
       );
@@ -53,6 +53,7 @@ class SignupController extends ChangeNotifier {
   Future<void> _storeUserId(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('userId', userId);
+    // await prefs.setString('user')
     print('User ID stored in SharedPreferences: $userId');
   }
 }

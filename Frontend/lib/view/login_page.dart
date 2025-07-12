@@ -1,27 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:odoo25/controller/home_controller.dart';
 import 'package:odoo25/controller/login_controller.dart';
-import 'package:odoo25/controller/signup_controller.dart';
-import 'package:odoo25/model/signup_model.dart';
-import 'package:odoo25/view/login_page.dart';
+import 'package:odoo25/model/login_model.dart';
+import 'package:odoo25/view/home_page.dart';
 
-class SignupView extends StatefulWidget {
-  final SignupController controller;
+class LoginView extends StatefulWidget {
+  final LoginController controller;
 
-  const SignupView({Key? key, required this.controller}) : super(key: key);
+  const LoginView({Key? key, required this.controller}) : super(key: key);
 
   @override
-  State<SignupView> createState() => _SignupViewState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _SignupViewState extends State<SignupView> {
+class _LoginViewState extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
 
   bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
 
   @override
   void initState() {
@@ -31,10 +28,8 @@ class _SignupViewState extends State<SignupView> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     widget.controller.removeListener(_onControllerChange);
     super.dispose();
   }
@@ -43,7 +38,7 @@ class _SignupViewState extends State<SignupView> {
     if (widget.controller.errorMessage != null) {
       _showAlertDialog('Error', widget.controller.errorMessage!);
     } else if (widget.controller.isLoading == false && widget.controller.errorMessage == null) {
-      _showAlertDialog('Success', 'Signup successful! Please log in with your new credentials.');
+      _showAlertDialog('Success', 'Login successful! You are now logged in.');
     }
     setState(() {}); // Rebuild to reflect loading state or clear errors
   }
@@ -61,9 +56,11 @@ class _SignupViewState extends State<SignupView> {
               onPressed: () {
                 Navigator.of(context).pop();
                 if (title == 'Success') {
+                  // After successful login, navigate to the HomeView
+                  // Use pushReplacement to prevent going back to login on back press
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginView(controller: LoginController())),
+                    MaterialPageRoute(builder: (context) => HomeView(controller: HomeController())) ,
                   );
                 }
               },
@@ -78,7 +75,7 @@ class _SignupViewState extends State<SignupView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Signup', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Login', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
@@ -90,7 +87,7 @@ class _SignupViewState extends State<SignupView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Create Your Account',
+                  'Welcome Back!',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -98,24 +95,6 @@ class _SignupViewState extends State<SignupView> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                    hintText: 'Enter your full name',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
-                    prefixIcon: const Icon(Icons.person),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -161,42 +140,7 @@ class _SignupViewState extends State<SignupView> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters long';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: !_isConfirmPasswordVisible,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    hintText: 'Re-enter your password',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
-                    prefixIcon: const Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                        });
-                      },
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Passwords do not match';
+                      return 'Please enter your password';
                     }
                     return null;
                   },
@@ -208,18 +152,15 @@ class _SignupViewState extends State<SignupView> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async { // Made onPressed async
                             if (_formKey.currentState!.validate()) {
-                              final signupData = SignupData(
-                                name: _nameController.text,
+                              final loginData = LoginData(
                                 email: _emailController.text,
                                 password: _passwordController.text,
                               );
-                              widget.controller.signupUser(signupData, _confirmPasswordController.text);
-                              Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginView(controller: LoginController())),
-                  );
+                              await widget.controller.loginUser(loginData); // Await loginUser
+                              // The navigation to HomeView now happens inside _showAlertDialog
+                              // after successful login, using pushReplacement.
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -231,7 +172,7 @@ class _SignupViewState extends State<SignupView> {
                             elevation: 5,
                           ),
                           child: const Text(
-                            'Sign Up',
+                            'Login',
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -244,4 +185,3 @@ class _SignupViewState extends State<SignupView> {
     );
   }
 }
-

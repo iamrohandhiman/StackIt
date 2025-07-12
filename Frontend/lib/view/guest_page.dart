@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:odoo25/controller/guest_controller.dart';
+import 'package:odoo25/controller/login_controller.dart';
 import 'package:odoo25/controller/signup_controller.dart';
+import 'package:odoo25/view/login_page.dart';
 import 'package:odoo25/view/signup_page.dart';
 
 class GuestQuestionView extends StatefulWidget {
@@ -177,17 +179,16 @@ class _GuestQuestionViewState extends State<GuestQuestionView> {
             TextButton(
               child: const Text('Login'),
               onPressed: () {
-                
-                // Navigator.of(context).pop(); 
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SignupView(controller: SignupController(),)));
+               Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginView(controller: LoginController())),
+                  );
               },
             ),
             TextButton(
               child: const Text('Signup'),
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => SignupView(controller: SignupController(),)));
-                // Navigator.of(context).pop(); 
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => SignupScreen()));
               },
             ),
           ],
